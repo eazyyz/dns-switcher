@@ -1,0 +1,22 @@
+# Каждая секция [Название] — отдельный DNS; адреса разделяются запятыми.
+# ipv4 и doh обязательны, ipv6 можно оставить пустым. Любую секцию можно изменить или удалить.
+
+[Bezmezhau DNS]
+ipv4=143.20.64.55,31.58.216.201
+ipv6=
+doh=https://dns.bezmezhau.com/dns-query
+
+[DNS-AI]
+ipv4=194.87.196.13,186.246.49.127
+ipv6=2a00:b700:5::3:62,2a0a:2b41:0:500d::53
+doh=https://dns.dns-ai.ru/dns-query
+
+[GeoHide (Россия)]
+ipv4=193.233.112.67,193.233.112.68
+ipv6=
+doh=https://geohide.ru/dns-query
+
+[Comss.one DNS]
+ipv4=83.220.169.155,212.109.195.93
+ipv6=
+doh=https://dns.comss.one/dns-query

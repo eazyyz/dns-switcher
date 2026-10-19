@@ -1,0 +1,19 @@
+.build/
+dist/
+.DS_Store
+
+# Local assistant configuration
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.codex/
+.claude/
+.cursor/
+.agents/
+.agent/
+.aider*
+.cursorrules
+.cursorignore
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/

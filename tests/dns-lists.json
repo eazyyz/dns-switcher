@@ -1,0 +1,220 @@
+[
+  {
+    "name": "empty",
+    "text": "",
+    "valid": true,
+    "names": []
+  },
+  {
+    "name": "comments only",
+    "text": "# no DNS\n; no profiles\n",
+    "valid": true,
+    "names": []
+  },
+  {
+    "name": "custom unicode name",
+    "text": "[Мой DNS — тест]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": true,
+    "names": [
+      "Мой DNS — тест"
+    ]
+  },
+  {
+    "name": "editable addresses",
+    "text": "[My DNS]\nipv4=192.168.1.2, 192.168.1.3\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": true,
+    "names": [
+      "My DNS"
+    ]
+  },
+  {
+    "name": "no optional ipv6",
+    "text": "[DNS]\nIPV4 = 1.1.1.1\nDoH = https://dns.example/query?a=b=c\n",
+    "valid": true,
+    "names": [
+      "DNS"
+    ]
+  },
+  {
+    "name": "UTF8 BOM and CRLF",
+    "text": "﻿[My DNS]\r\nipv4=1.1.1.1\r\nipv6=\r\ndoh=https://dns.example/dns-query\r\n",
+    "valid": true,
+    "names": [
+      "My DNS"
+    ]
+  },
+  {
+    "name": "more than four",
+    "text": "[DNS 0]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 1]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 2]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 3]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 4]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 5]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n\n[DNS 6]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": true,
+    "names": [
+      "DNS 0",
+      "DNS 1",
+      "DNS 2",
+      "DNS 3",
+      "DNS 4",
+      "DNS 5",
+      "DNS 6"
+    ]
+  },
+  {
+    "name": "rename remove reorder",
+    "text": "[Custom 2]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n[Renamed]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": true,
+    "names": [
+      "Custom 2",
+      "Renamed"
+    ]
+  },
+  {
+    "name": "ipv6 and custom port",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=2606:4700:4700::1111\ndoh=https://dns.example:8443/query\n",
+    "valid": true,
+    "names": [
+      "My DNS"
+    ]
+  },
+  {
+    "name": "missing ipv4",
+    "text": "[DNS]\ndoh=https://dns.example/query\n",
+    "valid": false
+  },
+  {
+    "name": "missing doh",
+    "text": "[DNS]\nipv4=1.1.1.1\n",
+    "valid": false
+  },
+  {
+    "name": "plaintext endpoint",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=http://dns.example/query\n",
+    "valid": false
+  },
+  {
+    "name": "empty name",
+    "text": "[]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "control in name",
+    "text": "[bad\u001bname]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "duplicate names",
+    "text": "[DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n[dns]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "duplicate field",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\nIPV4=8.8.8.8\n",
+    "valid": false
+  },
+  {
+    "name": "unknown field",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\ncommand=whoami\n",
+    "valid": false
+  },
+  {
+    "name": "field before name",
+    "text": "ipv4=1.1.1.1\n[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "unclosed section",
+    "text": "[DNS\nipv4=1.1.1.1\ndoh=https://dns.example/query",
+    "valid": false
+  },
+  {
+    "name": "ipv4 shorthand",
+    "text": "[My DNS]\nipv4=127.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv4 leading zero",
+    "text": "[My DNS]\nipv4=01.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv4 out of range",
+    "text": "[My DNS]\nipv4=999.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv4 hostname",
+    "text": "[My DNS]\nipv4=dns.example\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "duplicate ipv4",
+    "text": "[My DNS]\nipv4=1.1.1.1,1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "trailing comma",
+    "text": "[My DNS]\nipv4=1.1.1.1,\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv6 in ipv4",
+    "text": "[My DNS]\nipv4=::1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv4 in ipv6",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=1.1.1.1\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "ipv6 scope",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=fe80::1%en0\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "duplicate ipv6 aliases",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=::1,0:0:0:0:0:0:0:1\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "URL credentials",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://user:secret@dns.example/query\n",
+    "valid": false
+  },
+  {
+    "name": "URL fragment",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/query#fragment\n",
+    "valid": false
+  },
+  {
+    "name": "URL spaces",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns query\n",
+    "valid": false
+  },
+  {
+    "name": "URL backslashes",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example\\query\n",
+    "valid": false
+  },
+  {
+    "name": "URL port",
+    "text": "[My DNS]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example:99999/query\n",
+    "valid": false
+  },
+  {
+    "name": "too many addresses",
+    "text": "[My DNS]\nipv4=192.168.1.1,192.168.1.2,192.168.1.3,192.168.1.4,192.168.1.5,192.168.1.6,192.168.1.7,192.168.1.8,192.168.1.9\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "name too long",
+    "text": "[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]\nipv4=1.1.1.1\nipv6=\ndoh=https://dns.example/dns-query\n",
+    "valid": false
+  },
+  {
+    "name": "uppercase HTTPS scheme",
+    "text": "[DNS]\nipv4=1.1.1.1\ndoh=HTTPS://dns.example/query\n",
+    "valid": true,
+    "names": [
+      "DNS"
+    ]
+  }
+]
