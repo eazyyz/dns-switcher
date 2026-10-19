@@ -29,6 +29,14 @@ Write-Output "PASS $count shared TXT parser fixtures (PowerShell)"
 $directory = Join-Path ([IO.Path]::GetTempPath()) ('dns-switcher-tests-' + [guid]::NewGuid().ToString())
 $path = Join-Path $directory 'lists/dns-user.txt'
 try {
+    # The BAT launcher invokes the body in a child scope, rather than dot-sourcing it.
+    & {
+        param($Body, $Path)
+        $launchBody = $Body.Replace('if ($LibraryOnly) { return }', 'if ($LibraryOnly) { Initialize-DnsList $args[0]; return }')
+        & ([scriptblock]::Create($launchBody)) -LibraryOnly $Path
+    } $body $path
+    Assert-Test (@(Read-DnsListFile $path).Count -eq 4) 'BAT launcher scope did not seed the default list'
+    Remove-Item -LiteralPath $path
     Initialize-DnsList $path
     Assert-Test (@(Read-DnsListFile $path).Count -eq 4) 'Default list was not seeded'
     $custom = "[Custom]`nipv4=192.168.1.2`ndoh=https://dns.example/query`n"

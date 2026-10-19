@@ -114,7 +114,7 @@ function Read-DnsListFile([string]$Path) {
 function Initialize-DnsList([string]$Path) {
     if ([IO.File]::Exists($Path)) { return }
     [void][IO.Directory]::CreateDirectory([IO.Path]::GetDirectoryName($Path))
-    $bytes = [Text.Encoding]::UTF8.GetBytes($script:defaultListText)
+    $bytes = [Text.Encoding]::UTF8.GetBytes($defaultListText)
     try {
         $stream = [IO.File]::Open($Path,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
         try { $stream.Write($bytes,0,$bytes.Length) } finally { $stream.Dispose() }
