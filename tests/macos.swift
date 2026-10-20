@@ -163,6 +163,42 @@ test("interactive child keeps the foreground process group and reports its exit 
     catch {}
 }
 
+test("menu selection follows connected services, daemon health and pending recovery") {
+    func service(_ servers: [String], connected: Bool = true, enabled: Bool = true) throws -> ServiceSnapshot {
+        let data = try PropertyListSerialization.data(fromPropertyList: ["ServerAddresses": servers], format: .binary, options: 0)
+        return ServiceSnapshot(id: UUID().uuidString, name: "Wi-Fi", device: "en0", connected: connected,
+                               hadDNS: true, dnsEnabled: enabled, configuration: data)
+    }
+    let proxy = try service(["127.0.0.1"])
+    let automatic = try service([])
+    let manual = try service(["9.9.9.9"])
+    let profile = defaultProfiles[0]
+    let active = MenuStatus(services: [proxy, try service([], connected: false)], profile: profile, running: true, pending: false)
+    try expect(active.isSelected(profile) && !active.isAutomatic && !active.needsAttention, "connected profile selection")
+    let renumbered = Profile(key: "99", name: profile.name, ipv4: profile.ipv4, ipv6: profile.ipv6, endpoint: profile.endpoint)
+    try expect(active.isSelected(renumbered), "renumbered profile lost selection")
+    let edited = Profile(key: profile.key, name: profile.name, ipv4: profile.ipv4, ipv6: profile.ipv6, endpoint: "https://example.com/new")
+    try expect(!active.isSelected(edited), "unapplied edit appears selected")
+    for running in [false, true] {
+        let mixed = MenuStatus(services: [proxy, manual], profile: profile, running: running, pending: false)
+        try expect(mixed.activeProfile == nil && !mixed.isAutomatic, "mixed settings selected a profile")
+    }
+    let stopped = MenuStatus(services: [proxy], profile: profile, running: false, pending: false)
+    try expect(stopped.activeProfile == nil && stopped.needsAttention, "stopped daemon appears healthy")
+    let missing = MenuStatus(services: [proxy], profile: nil, running: true, pending: false)
+    try expect(missing.needsAttention && missing.activeProfile == nil, "missing daemon configuration appears healthy")
+    let pending = MenuStatus(services: [proxy], profile: profile, running: true, pending: true)
+    try expect(pending.needsAttention && pending.activeProfile == nil && !pending.isAutomatic, "pending recovery appears applied")
+    let auto = MenuStatus(services: [automatic], profile: profile, running: true, pending: false)
+    try expect(auto.isAutomatic && auto.activeProfile == nil, "stale daemon profile overrides actual network settings")
+    let disabled = MenuStatus(services: [try service(["127.0.0.1"], enabled: false)], profile: profile, running: true, pending: false)
+    try expect(disabled.isAutomatic && disabled.activeProfile == nil, "disabled DNS protocol appears active")
+    let offline = MenuStatus(services: [try service([], connected: false)], profile: nil, running: false, pending: false)
+    try expect(offline.isAutomatic, "offline configuration cannot be read")
+    let empty = MenuStatus(services: [], profile: nil, running: false, pending: false)
+    try expect(!empty.isAutomatic && empty.needsAttention, "missing services appear automatic")
+}
+
 // Use isolated preferences without activating system network changes.
 test("automatic/manual DNS and full rollback in isolated macOS preferences") {
     let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

@@ -43,8 +43,15 @@ EOF
     -o "$build_dir/libDNSSwitcherCore.a" -emit-module-path "$build_dir/DNSSwitcherCore.swiftmodule"
 /usr/bin/xcrun swiftc "${flags[@]}" -I "$build_dir" -L "$build_dir" -lDNSSwitcherCore \
     macos/Sources/dns-switcher/main.swift -o "$build_dir/dns-switcher"
+/usr/bin/xcrun swiftc "${flags[@]}" -I "$build_dir" -L "$build_dir" -lDNSSwitcherCore \
+    macos/Sources/AppLauncher/*.swift -o "$build_dir/DNS-Switcher-Launcher"
 if [[ "$run_tests" == true ]]; then
     /usr/bin/xcrun swiftc "${flags[@]}" -I "$build_dir" -L "$build_dir" -lDNSSwitcherCore \
         tests/macos.swift -o "$build_dir/core-tests"
     "$build_dir/core-tests"
+    mkdir -p "$build_dir/menu-tests"
+    cp tests/menu.swift "$build_dir/menu-tests/main.swift"
+    /usr/bin/xcrun swiftc "${flags[@]}" -I "$build_dir" -L "$build_dir" -lDNSSwitcherCore \
+        macos/Sources/AppLauncher/PrivilegedCommand.swift "$build_dir/menu-tests/main.swift" -o "$build_dir/menu-tests/run"
+    "$build_dir/menu-tests/run"
 fi

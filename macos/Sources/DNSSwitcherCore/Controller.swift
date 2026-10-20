@@ -218,6 +218,14 @@ public final class Controller {
         }
     }
 
+    public func menuStatus() throws -> MenuStatus {
+        let services = try NetworkSettings().snapshot()
+        let result = try run("/bin/launchctl", ["print", "system/\(Self.label)"], timeout: 3)
+        let running = result.status == 0 && String(decoding: result.output, as: UTF8.self).contains("state = running")
+        return try MenuStatus(services: services, profile: currentProfile(), running: running,
+                              pending: fm.fileExists(atPath: pendingFile.path))
+    }
+
     public func status(profiles: [Profile] = []) throws {
         print("Текущие настройки DNS:")
         let services = try NetworkSettings().snapshot()
