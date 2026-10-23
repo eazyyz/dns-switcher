@@ -77,8 +77,11 @@ test("user list initialization never overwrites edits or an intentionally empty 
 
 test("all four Windows profiles and IPv6 addresses are preserved") {
     try expect(defaultProfiles.map { $0.key } == ["2", "3", "4", "5"], "profile keys")
-    try expect(defaultProfiles.allSatisfy { $0.ipv4.count == 2 && $0.endpoint.hasPrefix("https://") }, "endpoints")
-    try expect(defaultProfiles[1].ipv6 == ["2a00:b700:5::3:62", "2a0a:2b41:0:500d::53"], "IPv6")
+    try expect(defaultProfiles.allSatisfy { !$0.ipv4.isEmpty && $0.endpoint.hasPrefix("https://") }, "endpoints")
+    try expect(defaultProfiles[0].ipv4 == ["181.215.40.49", "31.58.216.201"], "Bezmezhau addresses")
+    try expect(defaultProfiles[1].ipv4 == ["194.87.196.13", "45.151.102.219"], "DNS-AI addresses")
+    try expect(defaultProfiles[1].ipv6 == ["2a00:b700:5::3:62", "2a12:5940:d4ef::219"], "IPv6")
+    try expect(defaultProfiles[2].ipv4 == ["37.230.192.51"], "GeoHide address")
     let data = try JSONEncoder().encode(defaultProfiles)
     let decoded = try JSONDecoder().decode([Profile].self, from: data)
     try expect(decoded == defaultProfiles, "profile round trip")
